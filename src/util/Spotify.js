@@ -1,11 +1,12 @@
 const clientId = "46aac5138b4f40408953aacc8d540c60";
 let accessToken;
 let expiresIn  = 0;
-const redirectUri = "http://localhost:3000/";
+const redirectUri = "https://mark_law_jammming.surge.sh";
 const Spotify = {
   getAccessToken() {
-    if (accessToken) {
-      return accessToken;
+    if (localStorage.getItem('accessToken') &&
+        Date.parse(localStorage.getItem('accessToken_expiresIn')) > new Date().getTime()) {
+      return localStorage.getItem('accessToken');
     }
 
     const accessTokenMatch = window.location.href.match(/access_token=([^&]*)/);
@@ -13,8 +14,10 @@ const Spotify = {
     if (accessTokenMatch && expiresInMatch) {
       accessToken = accessTokenMatch[1];
       const expiresIn = Number(expiresInMatch[1]);
-      window.setTimeout(() => accessToken = '', expiresIn * 1000);
+      console.log('expiresIn: '+ expiresIn);
       window.history.pushState('Access Token', null, '/'); // This clears the parameters, allowing us to grab a new access token when it expires.
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.accessToken_expiresIn = new Date().getTime()+(expiresIn * 1000);
       return accessToken;
     } else {
       const accessUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=token&scope=playlist-modify-private&redirect_uri=${redirectUri}`;
@@ -22,10 +25,18 @@ const Spotify = {
     }
   },
 
-  search(searchTerm){
+  search(searchTerm, pageNumber){
+    localStorage.setItem('searchTerm', searchTerm);
+    localStorage.setItem('pageNumber', pageNumber);
     const accessToken = Spotify.getAccessToken();
 
-    return fetch(`https://api.spotify.com/v1/search?type=track&q=${searchTerm}`, {
+    if(localStorage.getItem('searchTerm') && localStorage.getItem('pageNumber')){
+      searchTerm = localStorage.getItem('searchTerm');
+      pageNumber = localStorage.getItem('pageNumber');
+      console.log('in if searchTerm: ' + searchTerm);
+      console.log('in if pageNumber: ' + pageNumber);
+    }
+    return fetch(`https://api.spotify.com/v1/search?type=track&q=${searchTerm}&limit=10&offset=${pageNumber*10}`, {
       headers:{
         Authorization: `Bearer ${accessToken}`
       }
@@ -42,7 +53,8 @@ const Spotify = {
                 name: track.name,
                 artist: track.artists[0].name,
                 album: track.album.name,
-                uri: track.uri
+                uri: track.uri,
+                preview_url: track.preview_url,
           }));
         }
     });
@@ -55,6 +67,7 @@ const Spotify = {
       const headers = {Authorization:`Bearer ${accessToken}`};
       let userId;
       return fetch('https://api.spotify.com/v1/me', {headers:headers}).then(
+          x => new Promise(resolve => setTimeout(() => resolve(x), 1000))).then(
         response =>{
           return response.json();
         }).then(

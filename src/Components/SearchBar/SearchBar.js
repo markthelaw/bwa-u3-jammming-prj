@@ -8,15 +8,22 @@ class SearchBar extends Component{
 
     this.state = {
       term: '',
+      pageNumber:0,
     };
     this.search = this.search.bind(this);
     this.handleTermChange = this.handleTermChange.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleNewValue = this.handleNewValue.bind(this);
   }
 
   search(event){
     //console.log('search parameter term: '+ this.state.term);
-    this.props.onSearch(this.state.term);
+    localStorage.setItem('term', this.state.term);
+    if(this.state.term){
+      this.props.onSearch(this.state.term, this.state.pageNumber);
+    }else{
+      console.log('this.state.term is empty');
+    }
     //event.preventDefault();
   }
 
@@ -29,10 +36,27 @@ class SearchBar extends Component{
       this.search(event);
     }
   }
+
+  handleNewValue(event){
+    return event.target.value;
+  }
+
+  display(){
+    return (<div>
+              <a>Pre</a>
+              <a>Next</a>
+            </div>)
+    ;
+  }
+
   render(){
     return(
       <div className="SearchBar">
-        <input placeholder="Enter A Song, Album, or Artist" onChange={this.handleTermChange} onKeyPress={this.handleKeyPress}/>
+        <input id="searchInput"
+               placeholder="Enter A Song, Album, or Artist"
+               input={localStorage.getItem('term')}
+               onChange={this.handleTermChange}
+               onKeyPress={this.handleKeyPress}/>
         <a onClick={this.search}>SEARCH</a>
       </div>
     );

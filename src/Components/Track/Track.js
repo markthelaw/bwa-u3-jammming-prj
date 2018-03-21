@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import styles from './Track.css';
+import {ListItem} from 'material-ui/List';
+import {pinkA200, transparent} from 'material-ui/styles/colors';
 
 const isRemoval = true;
 class Track extends Component{
@@ -8,14 +10,17 @@ class Track extends Component{
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
   }
-  renderAction(isRemoval){
-    if(isRemoval){
-      return <a className='Track-action' onClick={this.removeTrack}>-</a>;
+
+  showPreview(preview_url){
+    if(preview_url){
+      return(
+      <audio controls>
+        <source src={preview_url} type="audio/mpeg"/>
+      </audio>);
     }else{
-      return <a className='Track-action' onClick={this.addTrack}>+</a>;
+      return (<div>Preview Not Available</div>);
     }
   }
-
   addTrack(){
     this.props.onAdd(this.props.track);
     console.log('clicked addTrack, track: '+this.props.track);
@@ -27,13 +32,21 @@ class Track extends Component{
 
   render(){
     return(
-      <div className="Track">
+      <ListItem color={pinkA200} className="Track"
+      primaryText={this.props.track.name}
+      secondaryText={<p>{this.props.track.artist} | {this.props.track.album}</p> }
+      onClick={this.props.isRemoval? this.removeTrack: this.addTrack}
+      rightIcon={
+        <a className='Track-action' onClick={this.props.isRemoval? this.removeTrack: this.addTrack}>
+              {this.props.isRemoval? '-':'+'}</a>}
+              >
+
         <div className="Track-information">
-          <h3>{this.props.track.name}</h3>
-          <p>{this.props.track.artist} | {this.props.track.album}</p>
+          {this.showPreview(this.props.track.preview_url)}
         </div>
-          {this.renderAction(this.props.isRemoval)}
-      </div>
+
+
+      </ListItem>
     );
   }
 }

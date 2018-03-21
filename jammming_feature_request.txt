@@ -1,0 +1,26 @@
+﻿Design Document Template
+March 13th 2018
+
+
+OBJECTIVE
+Enhance user experience on Jamming ReactJS Demo on multiple enhancements.
+BACKGROUND 
+Press Enter to search is a must have feature for users. Desktop users expect pressing Enter should trigger a search.
+Preview samples is very important before user add the song to their playlist. Users often want to hear the songs before they add to their playlist. In addition, the ability to move songs between the search result list and the playlist is also important, so user won’t keep trying to add the same songs. 
+I would also like to help users not to type the search term again after users get rerouted to the Spotify authentication login page.
+Lastly, I also wanted to modify the styling, so that it is a bit more mobile friendly.
+TECHNICAL DESIGN
+Press Enter requires onKeyPress on the Input. I also added to check if the search term is empty, since Spotify does not allow empty search term.
+In the return of the search result json, there is a audio file link, which I have used the Audio HTML5 tag to implement the Preview audio.
+For making users to enjoy a more seamless experience, I tried to use localStorage to save the users entered search term before users were brought to the Spotify Auth page, so that on return from the Spotify Auth page, user does not not have to initiate search again. 
+For better UI and mobile experience, I have made the Div padding less on the side. I have reformatted each Track layout, and added a divider.
+  
+  
+
+Demo
+https://mark_law_jammming.surge.sh/
+
+
+CAVEATS
+After using the HTML5 Audio tag, modification to the styling of the Audio component has proven to be less flexible than I originally thought. 
+The localStorage and logic of storing search term also have been not as straight forward than I expected, and continue to experience issue to handle the login process and perserve the search term successfully.
