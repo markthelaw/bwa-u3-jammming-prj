@@ -5,7 +5,7 @@ const redirectUri = "https://mark_law_jammming.surge.sh";
 const Spotify = {
   getAccessToken() {
     if (localStorage.getItem('accessToken') &&
-        Date.parse(localStorage.getItem('accessToken_expiresIn')) > new Date().getTime()) {
+        Number(localStorage.getItem('accessToken_expiresIn')) > new Date().getTime()) {
       return localStorage.getItem('accessToken');
     }
 
